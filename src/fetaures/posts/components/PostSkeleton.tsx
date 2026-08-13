@@ -3,10 +3,11 @@ import React from 'react'
 
 function PostSkeleton() {
   return (
-   <div className='flex flex-wrap gap-y-4'>
-     <Skeleton className='w-4xl h-40 rounded-md'/>
-      <Skeleton className='w-4xl h-40 rounded-md'/>
-       <Skeleton className='w-4xl h-40 rounded-md'/>
+   <div className='sm:w-full w-[400px] flex flex-wrap gap-y-4'>
+     <Skeleton className='w-full h-40 rounded-md'/>
+      <Skeleton className='w-full mx-auto sm:w-lg rounded-md'/>
+       <Skeleton className='w-full h-40 rounded-md'/>
+        <Skeleton className='w-full h-40 rounded-md'/>
    </div>
   )
 }

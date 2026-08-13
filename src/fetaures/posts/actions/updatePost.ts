@@ -1,27 +1,26 @@
-
+"use server"
 import { prisma } from "@/lib/prisma";
-import { SINGLE_POSTS } from "@/path";
+import { actionClient } from "@/lib/safeAction";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { POSTS } from "@/path";
+import { updatePostSchema } from "../schema/updatePost";
 
-export async function updatingPost(_actionState:{
-    message:string
-},id:string,formData:FormData){
+export const updatingPost = actionClient
+  .inputSchema(updatePostSchema)
+  .action(async ({ parsedInput: { title, body, id, status } }) => {
     try {
-        const data={
-        title:formData.get("title") as string,
-        body:formData.get("body") as string
-    }
-    await prisma.posts.update({
-        where:{id},
-        data
-    })
-    revalidatePath(SINGLE_POSTS(id))
-    //redirect(SINGLE_POSTS(id))
-    return {
-        message:"updated post"
-    }
+      await prisma.posts.update({
+        where: { id },
+        data: {
+          title,
+          body,
+          status,
+        },
+      });
+      revalidatePath(POSTS);
+      return { success: true };
     } catch (error) {
-       return {message:"something went wrong"}
+      console.log("server error", error);
+      throw new Error("something went wrong");
     }
-}
+  });

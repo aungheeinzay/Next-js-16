@@ -10,16 +10,12 @@ interface Props{
 async function EditPage({params}:Props) {
     const {id} =await params
     const post = await getSinglePost(id)
-    if(!post){
-        notFound()
-    }
-    const updatePost=async(_actionState:{message:string},formData:FormData)=>{
-       "use server"
-        return await updatingPost(_actionState,id,formData)
-    }
+    if(!post)return notFound()
+
+    
   return (
     <div>
-        <PostForm actionFn={updatePost} isUpdate={true} data={post}/>
+        <PostForm actionFn={updatingPost} isUpdate={true} data={post}/>
     </div>
   )
 }

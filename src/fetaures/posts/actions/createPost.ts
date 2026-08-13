@@ -2,22 +2,19 @@
 import { prisma } from "@/lib/prisma";
 import { POSTS } from "@/path";
 import { revalidatePath } from "next/cache";
-import z from "zod";
-import { createPostSchema } from "../schema/base";
+import { actionClient } from "@/lib/safeAction";
+import { createPostSchema } from "../schema/createPost";
 
+export const creatingPost = actionClient.inputSchema(createPostSchema)
+.action(async({parsedInput:{title,body}})=>{
+    try {
+        const data={
+            title,body
+        }
 
-export async function creatingPost(_actionState:{message:string},formData:FormData){
-    const title=formData.get("name") as string
-    const body=formData.get("body") as string
-    const data={title,body}
-    const result  = createPostSchema.safeParse(data)
-    if(!result.success)return {message:"invalid input"}
-   
-     await prisma.posts.create({
-        data 
-    })
-    revalidatePath(POSTS)
-    return {
-        message:"post created"
+        await prisma.posts.create({data})
+        revalidatePath(POSTS)
+    } catch (error) {
+        throw new Error("something went wrong!")
     }
-}
+})

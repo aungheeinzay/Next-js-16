@@ -1,51 +1,148 @@
 "use client"
-import { Button } from '@/components/ui/button'
-import { Card, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
 import { PostI } from '../types/post'
-import { useActionState, useTransition } from 'react'
-import { Loader, LoaderCircle } from 'lucide-react'
+import { LoaderCircle } from 'lucide-react'
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button'
+import { Field, FieldError, FieldGroup } from '@/components/ui/field'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import z from 'zod'
+import { POSTS } from "@/path";
+import { creatingPost } from '../actions/createPost'
+import { useAction } from 'next-safe-action/hooks'
+import { createPostSchema } from '../schema/createPost'
+import { updatingPost } from '../actions/updatePost'
+import { toast } from '@/components/toaster/toast'
+import { SelectStatus } from './SelectStatus'
+import { updatePostSchema } from '../schema/updatePost'
+import { useRouter } from 'next/navigation'
 
-interface PostFormProps{
-  isUpdate:boolean;
-  actionFn:(actionState:{message:string},formData:FormData)=>Promise<{message:string}>;
-  data?:PostI
+interface PostFormProps {
+  isUpdate: boolean;
+  actionFn: typeof creatingPost | typeof updatingPost;
+  data?: PostI;
 }
 
- function PostForm({isUpdate,actionFn,data}:PostFormProps) {
-  const [actionState,formAction,isPending] = useActionState(actionFn,{
-    message:""
-  })
- // const [isPending,startTransition] = useTransition()
-// const handleSubmit=(formdata:FormData)=>{
-// startTransition(async()=>await actionFn(formdata))
+function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
+  console.log("isUpdate",isUpdate);
+  const router = useRouter()
+  const { executeAsync, isPending } = useAction(actionFn as any);
 
-// }
+  const createUpdateSchema = isUpdate ? updatePostSchema : createPostSchema;
+  
+  const form = useForm<z.infer<typeof createUpdateSchema>>({
+    resolver: zodResolver(createUpdateSchema),
+    defaultValues: {
+      title: data?.title || "",
+      body: data?.body || "",
+      ...(isUpdate && { 
+          status: (data as any)?.status || "IN_PROGESS",
+         id: data?.id || "" })
+    }
+  });
+  
+  const onSubmit = async (formData: z.infer<typeof createUpdateSchema>) => {
+
+    try {
+      const updateData = {
+        id: data?.id,
+        ...formData
+      };
+
+      console.log("upd data",updateData);
+      
+      await executeAsync(isUpdate ? updateData : formData);
+      form.reset();
+      toast.success(isUpdate ? "Post updated successfully" : "Post created successfully", 3000);
+      isUpdate && router.push(POSTS)
+    } catch (error) {
+      
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <Card className='w-full p-4'>
-        <form action={formAction} className="w-full flex flex-wrap gap-4">
-        <Input name='title' placeholder='enter title here' defaultValue={data?.title}/>
-        <Textarea name='body' placeholder='enter the content here!' defaultValue={data?.body}/>
-        <Button variant={"default"} type='submit'>{isUpdate ? isPending ? LoaderFn("updating...") : "update" :
-         isPending ? LoaderFn("saving...")  :"save"}</Button>
-        </form>
-       <CardFooter>{actionState?.message}</CardFooter>
+      <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+        <FieldGroup>
+          <Controller
+            name="title"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <Input
+                  {...field}
+                  id="form-rhf-demo-title"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="off"
+                  placeholder='Enter title....'
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="body"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <Textarea
+                  {...field}
+                  id="form-rhf-demo-body"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="off"
+                  placeholder='Enter content here...'
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          {isUpdate && 
+          <Controller
+          name={"status" as any}
+          control={form.control}
+          render={({field,fieldState})=>(
+          
+             <Field data-invalid={fieldState.invalid}>
+                <SelectStatus
+                value={field.value}          
+                onValueChange={field.onChange}
+                   aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+          )
+          }
+          />
+          }
+        </FieldGroup>
+
+        <Button variant={"default"} type='submit' className='mt-4'>
+          {isUpdate ? (isPending ? LoaderFn("Updating...") : "Update") : (isPending ? LoaderFn("Saving...") : "Save")}
+        </Button>
+      </form>
     </Card>
-  )
+  );
 }
 
-export default PostForm
+export default PostForm;
 
-function LoaderFn(name:string){
- 
-    return (
+function LoaderFn(name: string) {
+  return (
     <div className='flex gap-4 items-center'>
-  <LoaderCircle className='animate-spin scale-105'/>
-   <span>{name}</span>
-</div>
-  )
-  
+      <LoaderCircle className='animate-spin scale-105' />
+      <span>{name}</span>
+    </div>
+  );
 }
