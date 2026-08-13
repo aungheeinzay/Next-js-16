@@ -8,7 +8,7 @@ import { Posts } from '../../../../generated/prisma/client'
 
 function PostItem({id,title,body,status}:Posts) {
   return (
-     <Card key={title} className='p-4 flex flex-wrap justify-start'>
+     <Card key={title} className='w-full p-4 flex flex-wrap justify-start'>
                         <CardTitle className=' font-bold flex justify-between '>
                           <p className='text-lg'>{title}</p>
                           <span 
