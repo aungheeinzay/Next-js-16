@@ -7,7 +7,7 @@ interface Props{
 
 function Heading({title,description}:Props) {
   return (
-    <div className="w-full">
+    <div className="w-full my-2">
         <h2 className="text-xl font-bold">{title}</h2>
         <p>{description}</p>
         <Separator/>
