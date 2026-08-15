@@ -17,10 +17,12 @@ export const FAKE_POSTS=[
     }
 ]
 
+const newFakePost=FAKE_POSTS.map((post)=>({...post,userId:"VpdSqDAYW7QeE4x6j2UC4U3hqvUwnjWJ"}))
+
 const seed =async()=>{
     await prisma.posts.deleteMany();
     await prisma.posts.createMany({
-        data:FAKE_POSTS
+        data:newFakePost
     })
     console.log("database seeded")
 }

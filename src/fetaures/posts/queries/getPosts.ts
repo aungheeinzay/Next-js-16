@@ -1,10 +1,14 @@
 
-import { Posts } from "../../../../generated/prisma/client";
-import { PostI } from "../types/post";
-import { prisma } from "@/lib/prisma";
 
-export const getPosts = async():Promise<Posts[]>=>{
+import { prisma } from "@/lib/prisma";
+import {postWithUser} from "@/fetaures/posts/types/post";
+
+
+export const getPosts = async():Promise<postWithUser[]>=>{
    return prisma.posts.findMany({
-    orderBy:{createdAt:"desc"}
+    orderBy:{createdAt:"desc"},
+       include:{
+        user:true
+       }
    })
 }

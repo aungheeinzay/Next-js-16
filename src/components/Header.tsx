@@ -3,15 +3,12 @@ import { ABOUTS, POSTS, SIGNINPATH, SIGNUPPATH } from "@/path"
 import Link from "next/link"
 import { ModeToggle } from "./ThemeToggle"
 import { Button } from "./ui/button"
-import {auth} from "@/lib/auth";
-import {headers} from "next/headers";
 import {signOutAction} from "@/fetaures/auth/action/signOut";
+import {getSession} from "@/lib/session";
 
 
 async function Header() {
-    const session =await auth.api.getSession({
-        headers:await headers()
-    })
+    const session = await getSession()
     console.log("session",session)
   return (
     <div className="w-full flex justify-between items-center">

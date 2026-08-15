@@ -1,15 +1,11 @@
 
-import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "@/components/ui/card";
+
 import { getSinglePost } from "@/fetaures/posts/queries/getSinglePost";
-import { Button } from "@/components/ui/button";
-import DeleteBtn from "@/fetaures/posts/components/deleteBtn";
-import { getPosts } from "@/fetaures/posts/queries/getPosts";
-import Link from "next/link";
-import { EDIT_POST } from "@/path";
-import { ArrowUpRight } from "lucide-react";
+
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Heading from "@/components/Heading";
+import PostItem from "@/fetaures/posts/components/postItem";
 
 interface Props{
     params:Promise<{id:string}>
@@ -19,29 +15,12 @@ interface Props{
 async function SinglePost({params}:Props) {
     const {id} = await params;
   
-    const post =await getSinglePost(id)
-    if(!post){
+    const userPost =await getSinglePost(id)
+    if(!userPost){
         throw new Error("404 | not found with these id"+id)
     }
   return (
-
-    <Card className="p-4">
-           
-         <CardTitle className=' font-bold flex justify-between '>
-                          <p className='text-lg'>{post.title}</p>
-                          <span 
-                          className='text-[10px] p-2  font-mono bg-green-800 rounded-md grid place-items-center'
-                          >{post.status}</span>
-                        </CardTitle>
-                    <CardDescription className='text-sm font-mono '>{post.body}</CardDescription>
-                    <CardFooter className="flex gap-2">
-             <DeleteBtn id={id}/>
-             <Button asChild><Link href={EDIT_POST(id)}>
-             <ArrowUpRight/>
-             edit
-             </Link></Button>
-            </CardFooter>
-          </Card>
+      <PostItem isDetail={true} {...userPost}/>
   )
 }
 

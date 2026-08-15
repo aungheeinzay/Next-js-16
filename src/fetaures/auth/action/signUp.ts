@@ -7,7 +7,7 @@ import {POSTS} from "@/path";
 import { returnServerError } from "next-safe-action";
 
 export const signUpAction = actionClient.inputSchema(signUpSchema)
-.action(async({parsedInput:{email,password,confirmPassword,name}})=>{
+.action(async({parsedInput:{email,password,name}})=>{
    try{
        await auth.api.signUpEmail({
            body:{

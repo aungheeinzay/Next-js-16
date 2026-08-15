@@ -4,10 +4,19 @@ import { actionClient } from "@/lib/safeAction";
 import { revalidatePath } from "next/cache";
 import { POSTS } from "@/path";
 import { updatePostSchema } from "../schema/updatePost";
+import {getSession} from "@/lib/session";
+import {returnServerError} from "next-safe-action";
 
 export const updatingPost = actionClient
   .inputSchema(updatePostSchema)
   .action(async ({ parsedInput: { title, body, id, status } }) => {
+    const session = await getSession()
+    if (!session){
+      return returnServerError({
+        status:404,
+        message:"unauthorized to post"
+      })
+    }
     try {
       await prisma.posts.update({
         where: { id },
@@ -19,8 +28,10 @@ export const updatingPost = actionClient
       });
       revalidatePath(POSTS);
       return { success: true };
-    } catch (error) {
-      console.log("server error", error);
-      throw new Error("something went wrong");
+    } catch (error:any) {
+      return returnServerError({
+        status:404,
+        message:error.message
+      })
     }
   });

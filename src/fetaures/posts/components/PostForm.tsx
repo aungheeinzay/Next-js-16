@@ -25,11 +25,28 @@ interface PostFormProps {
   actionFn: typeof creatingPost | typeof updatingPost;
   data?: PostI;
 }
+interface CustomServerError {
+    statusCode?: number;
+    message: string;
+}
 
 function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
   console.log("isUpdate",isUpdate);
   const router = useRouter()
-  const { executeAsync, isPending } = useAction(actionFn as any);
+  const { executeAsync, isPending } = useAction(actionFn as any,{
+      onSuccess:()=>{
+          form.reset();
+          toast.success(isUpdate ? "post updated successfully" : "post created successfully")
+          return
+      },
+      onError:({error})=>{
+          if (error.serverError) {
+              const serverErr = error.serverError as CustomServerError;
+              toast.error(serverErr.message)
+              return;
+          }
+      }
+  });
 
   const createUpdateSchema = isUpdate ? updatePostSchema : createPostSchema;
   
@@ -46,22 +63,15 @@ function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
   
   const onSubmit = async (formData: z.infer<typeof createUpdateSchema>) => {
 
-    try {
+
       const updateData = {
         id: data?.id,
         ...formData
       };
 
       console.log("upd data",updateData);
-      
       await executeAsync(isUpdate ? updateData : formData);
-      form.reset();
-      toast.success(isUpdate ? "Post updated successfully" : "Post created successfully", 3000);
-      isUpdate && router.push(POSTS)
-    } catch (error) {
-      
-      toast.error("Something went wrong");
-    }
+
   };
 
   return (
