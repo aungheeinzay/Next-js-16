@@ -1,10 +1,10 @@
 import { getPosts } from "../queries/getPosts"
 import PostItem from "./postItem"
-import {getSession} from "@/lib/session";
+import {cacheSession} from "@/lib/session";
 
 async function PostList() {
     const posts = await getPosts()
-    const session=await getSession()
+    const session=await cacheSession()
     const userId = session?.user?.id
 return (
      <div className='w-full flex flex-wrap gap-4'>

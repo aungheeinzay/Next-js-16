@@ -4,11 +4,11 @@ import Link from "next/link"
 import { ModeToggle } from "./ThemeToggle"
 import { Button } from "./ui/button"
 import {signOutAction} from "@/fetaures/auth/action/signOut";
-import {getSession} from "@/lib/session";
+import {cacheSession} from "@/lib/session";
 
 
 async function Header() {
-    const session = await getSession()
+    const session = await cacheSession()
     console.log("session",session)
   return (
     <div className="w-full flex justify-between items-center">

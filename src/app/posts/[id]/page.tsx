@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Heading from "@/components/Heading";
 import PostItem from "@/fetaures/posts/components/postItem";
+import {cacheSession} from "@/lib/session";
 
 interface Props{
     params:Promise<{id:string}>
@@ -14,13 +15,14 @@ interface Props{
 
 async function SinglePost({params}:Props) {
     const {id} = await params;
-  
+
     const userPost =await getSinglePost(id)
+    const session = await cacheSession()
     if(!userPost){
         throw new Error("404 | not found with these id"+id)
     }
   return (
-      <PostItem isDetail={true} {...userPost}/>
+      <PostItem isDetail={true} {...userPost} loginUser={session?.user.id}/>
   )
 }
 
