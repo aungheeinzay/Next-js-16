@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
 import { LoaderCircle } from 'lucide-react'
-import { Card } from '@/components/ui/card';
+import {Card, CardFooter} from '@/components/ui/card';
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldGroup } from '@/components/ui/field'
 import { Controller, useForm } from 'react-hook-form'
@@ -16,7 +16,8 @@ import { useRouter } from 'next/navigation'
 import { signInAction } from '../action/signIn'
 import { signUpAction } from '../action/signUp'
 import { signInSchema, signUpSchema } from '../schema';
-import { POSTS } from '@/path';
+import {FORGETPASSWORD, POSTS, SIGNINPATH, SIGNUPPATH} from '@/path';
+import Link from "next/link";
 
 interface AuthFormProps {
   isSignUp: boolean;
@@ -147,6 +148,22 @@ function AuthForm({ isSignUp, actionFn }: AuthFormProps) {
           {isSignUp ? (isPending ? LoaderFn("loading...") : "Sign Up") : (isPending ? LoaderFn("loading...") : "Sign In")}
         </Button>
       </form>
+    <CardFooter className={"w-full bg-card/80"}>
+      {
+        isSignUp ?
+            <div className={"flex gap-2"}>
+              Already have an account ? :
+              <Link href={SIGNINPATH}>Sign in</Link>
+            </div> :
+            <div className={"flex justify-between w-full"}>
+              <div className={"flex gap-2 "}>
+                Don't have an account? :
+                <Link href={SIGNUPPATH}>Sign up</Link>
+              </div>
+              <Link href={FORGETPASSWORD} className={"block underline"}>forget password?</Link>
+            </div>
+      }
+    </CardFooter>
     </Card>
   );
 }
