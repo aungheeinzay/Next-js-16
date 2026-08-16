@@ -26,5 +26,5 @@ export const signUpAction = actionClient.inputSchema(signUpSchema)
         message:errorMessage
      })
    }
-    redirect(POSTS)
+
 })

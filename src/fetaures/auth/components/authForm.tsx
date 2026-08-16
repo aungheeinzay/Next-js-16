@@ -18,6 +18,8 @@ import { signUpAction } from '../action/signUp'
 import { signInSchema, signUpSchema } from '../schema';
 import {FORGETPASSWORD, POSTS, SIGNINPATH, SIGNUPPATH} from '@/path';
 import Link from "next/link";
+import {Separator} from "@/components/ui/separator";
+import {GithubBtn, GoogleBtn} from "@/fetaures/auth/components/OauthForm";
 
 interface AuthFormProps {
   isSignUp: boolean;
@@ -34,8 +36,7 @@ function AuthForm({ isSignUp, actionFn }: AuthFormProps) {
   const { executeAsync, isPending } = useAction(actionFn as any,{
     onSuccess:()=>{
       form.reset();
-      
-      toast.success(isSignUp ? "Account created successfully" : "Signed in successfully", 3000);
+      toast.success(isSignUp ? "Account created successfully.check up email to confirm" : "Signed in successfully", 3000);
 
     },
     onError:({error})=>{
@@ -144,10 +145,16 @@ function AuthForm({ isSignUp, actionFn }: AuthFormProps) {
           }
         </FieldGroup>
 
-        <Button variant={"default"} type='submit' className='mt-4'>
+        <Button variant={"outline"} type='submit' className='mt-4 w-full'>
           {isSignUp ? (isPending ? LoaderFn("loading...") : "Sign Up") : (isPending ? LoaderFn("loading...") : "Sign In")}
         </Button>
+
       </form>
+      <Separator className={"my-2"}/>
+      <div className={"grid gap-2"}>
+        <GithubBtn/>
+        <GoogleBtn/>
+      </div>
     <CardFooter className={"w-full bg-card/80"}>
       {
         isSignUp ?
@@ -163,7 +170,9 @@ function AuthForm({ isSignUp, actionFn }: AuthFormProps) {
               <Link href={FORGETPASSWORD} className={"block underline"}>forget password?</Link>
             </div>
       }
+
     </CardFooter>
+
     </Card>
   );
 }
