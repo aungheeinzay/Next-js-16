@@ -15,7 +15,6 @@ async function Header() {
         <h2 className="text-4xl font-bold">Dev Form</h2>
         <div className="flex gap-4">
             <Link href={POSTS}>posts</Link>
-            <Link href={ABOUTS}>about</Link>
             {
                 session ?
                     <form action={signOutAction}>

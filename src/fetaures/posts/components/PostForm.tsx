@@ -37,6 +37,7 @@ function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
       onSuccess:()=>{
           form.reset();
           toast.success(isUpdate ? "post updated successfully" : "post created successfully")
+          router.push('/')
           return
       },
       onError:({error})=>{

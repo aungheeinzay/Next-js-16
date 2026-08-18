@@ -2,8 +2,12 @@ import { getPosts } from "../queries/getPosts"
 import PostItem from "./postItem"
 import {cacheSession} from "@/lib/session";
 
-async function PostList() {
-    const posts = await getPosts()
+interface Props{
+    search:string
+    sort:"asc" | "desc"
+}
+async function PostList({search,sort}:Props) {
+    const posts = await getPosts(search,sort)
     const session=await cacheSession()
     const userId = session?.user?.id
 return (

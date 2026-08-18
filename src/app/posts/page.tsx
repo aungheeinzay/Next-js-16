@@ -18,9 +18,6 @@ import { Suspense} from 'react'
   <main className='w-full flex flex-wrap gap-4'>
     <Heading title='all posts'/>
     <PostForm actionFn={creatingPost} isUpdate={false}/>
-     <Suspense fallback={<PostSkeleton/>}>
-      <PostList/>
-     </Suspense>
   </main>
   ) 
 }
