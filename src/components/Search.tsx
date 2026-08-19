@@ -23,6 +23,7 @@ export default function Search(){
             params.set("search",value)
         }else {
             params.delete("search")
+
         }
         replace(`${pathName}?${params}`,{
             scroll:false

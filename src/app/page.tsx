@@ -7,6 +7,7 @@ import {SearchParams} from "next/dist/server/request/search-params";
 import SortBtn from "@/components/SortBtn";
 import {sortData} from "@/sortData";
 
+
 interface Props{
   searchParams: Promise<SearchParams>
 }
@@ -28,6 +29,11 @@ export default async function Home({searchParams}: Props) {
           ? params.sort[0]
           : "desc";
 
+    const page = typeof params?.page === "string"
+        ? params.page
+        : Array.isArray(params?.page)
+            ? params.page[0]
+            : params.page;
   const sort = (rawSort === "asc" || rawSort === "desc") ? rawSort : "desc";
 
   console.log("searchParams", search, sort);
@@ -38,7 +44,7 @@ export default async function Home({searchParams}: Props) {
         <Search/>
         <SortBtn sortData={sortData} defaultValue={"desc"}/>
         <Suspense fallback={<PostSkeleton/>}>
-          <PostList search={search} sort={sort}/>
+          <PostList search={search} sort={sort} page={page || 1}/>
         </Suspense>
       </div>
   );

@@ -12,7 +12,9 @@ async function Header() {
     console.log("session",session)
   return (
     <div className="w-full flex justify-between items-center">
-        <h2 className="text-4xl font-bold">Dev Form</h2>
+        <Link href={"/"}>
+            <h2 className="text-4xl font-bold">Dev Form</h2>
+        </Link>
         <div className="flex gap-4">
             <Link href={POSTS}>posts</Link>
             {

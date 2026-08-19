@@ -1,16 +1,22 @@
+"use client"
 import { Button } from '@/components/ui/button'
 import {Card, CardDescription, CardFooter, CardTitle} from '@/components/ui/card'
-import {EDIT_POST, SINGLE_POSTS} from '@/path'
+import {EDIT_POST} from '@/path'
 import Link from 'next/link'
 import { postWithUser} from '../types/post'
-import {Eye, SquarePen} from 'lucide-react'
+import {ChevronsDown, Eye, SquarePen} from 'lucide-react'
 import DeleteBtn from "@/fetaures/posts/components/deleteBtn";
+import {Separator} from "@/components/ui/separator";
+import CreateComment from "@/fetaures/comment/components/createComment";
+import {useState} from "react";
+import CommentBtn from "@/fetaures/comment/components/commentBtn";
 
 interface  postItemProps extends  postWithUser{
-    isDetail:boolean
+    //isDetail:boolean
     loginUser:string | undefined
 }
-function PostItem({id,title,body,status,user,isDetail,loginUser}:postItemProps) {
+function PostItem({id,title,body,status,user,loginUser}:postItemProps) {
+    const [expend,setExpend] = useState(false)
     const currentUser = loginUser ===user.id
 
   return (
@@ -26,29 +32,38 @@ function PostItem({id,title,body,status,user,isDetail,loginUser}:postItemProps) 
                               >{status}</span>
                           </div>
                         </CardTitle>
-                    <CardDescription className={`text-sm font-mono ${!isDetail && "line-clamp-2"}`}>
+                    <CardDescription className={`text-sm font-mono ${!expend && "line-clamp-2"}`}>
                         {body}</CardDescription>
-                <div className={"flex gap-2"}>
-                    {
-                        isDetail? currentUser && <DeleteBtn id={id}/> :
-                        <>
-                            <Button
-                                variant={"outline"}
-                                className={"w-fit"}
+                <div className={"w-full flex gap-2"}>
 
-                            >
-                                <Eye/>
-                                <Link href={SINGLE_POSTS(id)}>details</Link>
-                            </Button>
-                            {
-                                currentUser &&  <Button asChild><Link href={EDIT_POST(id)}>
-                                    <SquarePen/>
-                                    edit
-                                </Link></Button>
-                            }
-                        </>
-                    }
+
+
+                            <div className={"flex gap-2 items-center"}>
+                                 <Button
+                                    variant={"outline"}
+                                    className={"w-fit"}
+                                    onClick={()=>setExpend(!expend)}
+
+                                >
+                                    <Eye/>
+                                    <span >{expend ? "see less" : "details"}</span>
+                                </Button>
+
+                                {currentUser &&  <>
+                                      <Button asChild><Link href={EDIT_POST(id)}>
+                                          <SquarePen/>
+                                          edit
+                                      </Link></Button>
+                                      <DeleteBtn id={id}/>
+                                  </>
+
+                                }
+                            </div>
+
                 </div>
+         <Separator/>
+         <CommentBtn id={id}/>
+         <CreateComment postId={id}/>
                     </Card>
   )
 }

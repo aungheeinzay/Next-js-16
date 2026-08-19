@@ -11,13 +11,17 @@ export const deletePost = async(id:string):Promise<void> =>{
     if (!session){
         throw new Error("unauthorized to delete")
     }
-  await prisma.posts.delete({
+
+try {
+    await prisma.posts.delete({
         where:{
             id,
             userId:session.user.id
         }
     })
-     revalidatePath(POSTS);
-   
+    revalidatePath(POSTS);
+}catch (error:any){
+   throw new Error("Something went wrong")
 }
+    }
 

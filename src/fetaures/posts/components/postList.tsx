@@ -1,13 +1,14 @@
 import { getPosts } from "../queries/getPosts"
 import PostItem from "./postItem"
 import {cacheSession} from "@/lib/session";
-
+import Pagination from "@/components/Pagination";
 interface Props{
     search:string
-    sort:"asc" | "desc"
+    sort:"asc" | "desc",
+    page:string | number
 }
-async function PostList({search,sort}:Props) {
-    const posts = await getPosts(search,sort)
+async function PostList({search,sort,page}:Props) {
+    const {posts,totalPage,currentPage} = await getPosts({search,sort,page})
     const session=await cacheSession()
     const userId = session?.user?.id
 return (
@@ -15,9 +16,10 @@ return (
          {posts.length==0 && <p className={"text-center text-xl font-medium"}>No Posts</p>}
             {
                 posts?.map((post)=>(
-                  <PostItem loginUser={userId}  isDetail={false} key={post.id} {...post}/>
+                  <PostItem loginUser={userId}  key={post.id} {...post}/>
                 ))
             }
+         <Pagination totalPage={totalPage} currentPage={currentPage}/>
         
     </div>
 )
