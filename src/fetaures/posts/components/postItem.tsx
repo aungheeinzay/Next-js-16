@@ -10,12 +10,15 @@ import {Separator} from "@/components/ui/separator";
 import CreateComment from "@/fetaures/comment/components/createComment";
 import {useState} from "react";
 import CommentBtn from "@/fetaures/comment/components/commentBtn";
+import {CommentWithUser} from "@/fetaures/comment/types/commentsT";
 
 interface  postItemProps extends  postWithUser{
     //isDetail:boolean
     loginUser:string | undefined
 }
 function PostItem({id,title,body,status,user,loginUser}:postItemProps) {
+    const [comments,setComments]=useState<CommentWithUser[]>([])
+    const [loading,setLoading] = useState(false)
     const [expend,setExpend] = useState(false)
     const currentUser = loginUser ===user.id
 
@@ -62,8 +65,19 @@ function PostItem({id,title,body,status,user,loginUser}:postItemProps) {
 
                 </div>
          <Separator/>
-         <CommentBtn id={id}/>
-         <CreateComment postId={id}/>
+         <CommentBtn
+             id={id}
+             setLoading={setLoading}
+             setComments={setComments}
+             isLoading={loading}
+             comments={comments}
+             currentUser={currentUser}
+             loginUser={loginUser}
+         />
+         <CreateComment
+             postId={id}
+             setComments={setComments}
+         />
                     </Card>
   )
 }

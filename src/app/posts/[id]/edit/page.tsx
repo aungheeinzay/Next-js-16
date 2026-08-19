@@ -1,23 +1,24 @@
-import { updatingPost } from "@/fetaures/posts/actions/updatePost"
-import PostForm from "@/fetaures/posts/components/PostForm"
-import { getSinglePost } from "@/fetaures/posts/queries/getSinglePost"
-import { notFound } from "next/navigation"
+import {Card, CardHeader} from "@/components/ui/card";
+import Heading from "@/components/Heading";
+import PostForm from "@/fetaures/posts/components/PostForm";
+import {getSinglePost} from "@/fetaures/posts/queries/getSinglePost";
+import {updatingPost} from "@/fetaures/posts/actions/updatePost";
 
 interface Props{
     params:Promise<{id:string}>
 }
-
-async function EditPage({params}:Props) {
-    const {id} =await params
-    const post = await getSinglePost(id)
-    if(!post)return notFound()
-
-    
-  return (
-    <div>
-        <PostForm actionFn={updatingPost} isUpdate={true} data={post}/>
-    </div>
-  )
+export default async function Page({params}:Props){
+    const {id} = await params
+    console.log("id",id)
+    const  post = await getSinglePost(id)
+    if (!post)return null
+    return (
+        <Card>
+           <CardHeader>
+               <Heading title={"Edit Post"}
+                        description={"edit your post adn status"}/>
+           </CardHeader>
+            <PostForm isUpdate={true} actionFn={updatingPost} data={post}/>
+        </Card>
+    )
 }
-
-export default EditPage

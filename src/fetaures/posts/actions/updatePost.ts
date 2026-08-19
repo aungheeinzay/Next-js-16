@@ -27,7 +27,7 @@ export const updatingPost = actionClient
           status,
         },
       });
-      revalidatePath(POSTS);
+      revalidatePath("/");
     } catch (error:any) {
       return returnServerError({
         status:404,

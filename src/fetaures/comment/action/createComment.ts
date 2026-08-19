@@ -24,8 +24,9 @@ export const creatingComment = actionClient.inputSchema(createCommentSchema)
                 userId:session.user.id
             }
 
-            await prisma.comment.create({data})
-            revalidatePath(POSTS)
+            const createdComment = await prisma.comment.create({data,include:{user:true}})
+            return createdComment
+
         } catch (error:any) {
             return returnServerError({
                 message:error.message

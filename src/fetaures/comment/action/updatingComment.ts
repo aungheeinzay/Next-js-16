@@ -1,7 +1,6 @@
 "use server"
 import { prisma } from "@/lib/prisma";
-import { POSTS } from "@/path";
-import { revalidatePath } from "next/cache";
+
 import { actionClient } from "@/lib/safeAction";
 import { cacheSession } from "@/lib/session";
 import { returnServerError } from "next-safe-action";
@@ -31,14 +30,16 @@ export const updatingComment = actionClient.inputSchema(updateCommentSchema)
             }
 
 
-            await prisma.comment.update({
-                where: { id: commentId },
-                data: { comment }
+            const com = await prisma.comment.update({
+                where: {
+                    id: commentId,
+                userId: session.user.id},
+                data: { comment },
+                include:{user:true}
             });
 
-            revalidatePath(POSTS);
 
-            return { success: true, message: "Comment updated successfully" };
+            return com
 
         } catch (error: any) {
             return returnServerError({

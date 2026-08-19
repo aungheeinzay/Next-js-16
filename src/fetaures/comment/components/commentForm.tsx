@@ -14,9 +14,11 @@ import { toast } from '@/components/toaster/toast'
 
 import {creatingComment} from "@/fetaures/comment/action/createComment";
 import {updatingComment} from "@/fetaures/comment/action/updatingComment";
-import {Comment} from "../../../../generated/prisma/client";
+
 import {updateCommentSchema} from "@/fetaures/comment/schema/updateComment";
 import {createCommentSchema} from "@/fetaures/comment/schema/createComment";
+import {CommentWithUser} from "@/fetaures/comment/types/commentsT";
+import {Dispatch, SetStateAction} from "react";
 
 interface CommentFormProps {
     isUpdate: boolean;
@@ -26,6 +28,8 @@ interface CommentFormProps {
         id:string;
         comment:string
     }
+    setComments:Dispatch<SetStateAction<CommentWithUser[]>>
+    onOpen?:(value:boolean)=>void
 }
 interface CustomServerError {
     statusCode?: number;
@@ -33,12 +37,26 @@ interface CustomServerError {
 
 }
 
-function PostForm({ isUpdate, actionFn, commentI,postId }: CommentFormProps) {
+function PostForm({ isUpdate, actionFn, commentI,postId,setComments,onOpen }: CommentFormProps) {
 
     const { executeAsync, isPending } = useAction(actionFn as any,{
-        onSuccess:()=>{
-            form.reset();
-            return
+        onSuccess:({data}:{data:CommentWithUser})=>{
+            form.reset()
+            if (!isUpdate) {
+
+                setComments((prev) => [data, ...prev]);
+            }else {
+                setComments((pre)=>pre.map((c)=>{
+                    if (c.id==data.id){
+                        return data
+                    }
+                    return c
+
+                }))
+                if (onOpen)onOpen(false)
+            }
+
+            return;
         },
         onError:({error})=>{
             if (error.serverError) {
@@ -67,9 +85,9 @@ function PostForm({ isUpdate, actionFn, commentI,postId }: CommentFormProps) {
     };
 
     return (
-        <Card className='w-full p-4'>
+
             <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}
-            className={"flex gap-2 items-center justify-center"}>
+            className={`flex gap-2 items-center justify-center w-full ${isUpdate && "py-2"}`}>
 
 
                       <Controller
@@ -93,10 +111,10 @@ function PostForm({ isUpdate, actionFn, commentI,postId }: CommentFormProps) {
 
 
                 <Button variant={"default"} type='submit' className=''>
-                    {isUpdate ? (isPending ? LoaderFn("...") : "updating") : (isPending ? LoaderFn("...") : "comment")}
+                    {isUpdate ? (isPending ? LoaderFn("...") : "update") : (isPending ? LoaderFn("...") : "comment")}
                 </Button>
             </form>
-        </Card>
+
     );
 }
 

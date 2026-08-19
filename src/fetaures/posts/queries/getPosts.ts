@@ -13,7 +13,8 @@ interface PaginatedPosts{
     totalPage:number,
     currentPage:number
     posts:postWithUser[]
-}export const getPosts = async ({ search, sort, page }: getPostPara): Promise<PaginatedPosts> => {
+}
+export const getPosts = async ({ search, sort, page }: getPostPara): Promise<PaginatedPosts> => {
 
     const POST_PER_PAGE = 4;
     const currentPage =search ? 1 : Number(page)
