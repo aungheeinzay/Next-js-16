@@ -8,7 +8,7 @@ import {cacheSession} from "@/lib/session";
 import {returnServerError} from "next-safe-action";
 
 export const creatingPost = actionClient.inputSchema(createPostSchema)
-.action(async({parsedInput:{title,body}})=>{
+.action(async({parsedInput:{title,body,images}})=>{
     const session = await cacheSession()
     if (!session){
         return returnServerError({
@@ -20,10 +20,13 @@ export const creatingPost = actionClient.inputSchema(createPostSchema)
         const data={
             title,
             body,
-            userId:session.user.id
+            userId:session.user.id,
+            images:images
         }
 
-        await prisma.posts.create({data})
+        await prisma.posts.create({
+            data
+        })
         revalidatePath(POSTS)
     } catch (error:any) {
         return returnServerError({

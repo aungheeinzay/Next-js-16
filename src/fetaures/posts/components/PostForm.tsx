@@ -19,6 +19,8 @@ import { toast } from '@/components/toaster/toast'
 import { SelectStatus } from './SelectStatus'
 import { updatePostSchema } from '../schema/updatePost'
 import { useRouter } from 'next/navigation'
+import FileUploader from "@/fetaures/posts/components/uploadFile";
+import {useState} from "react";
 
 interface PostFormProps {
   isUpdate: boolean;
@@ -31,7 +33,8 @@ interface CustomServerError {
 }
 
 function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
-  console.log("isUpdate",isUpdate);
+
+    const [imagesLoading,setImagesLoading]=useState(false)
   const router = useRouter()
   const { executeAsync, isPending } = useAction(actionFn as any,{
       onSuccess:()=>{
@@ -56,6 +59,7 @@ function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
     defaultValues: {
       title: data?.title || "",
       body: data?.body || "",
+        images:data?.images ?? [],
       ...(isUpdate && { 
           status: (data as any)?.status || "IN_PROGESS",
          id: data?.id || "" })
@@ -117,6 +121,19 @@ function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
             )}
           />
 
+            <Controller
+                name={"images"}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                     <FileUploader value={field.value} onChange={field.onChange} setImageLoading={setImagesLoading}/>
+                        {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                        )}
+                    </Field>
+                )}
+            />
+
           {isUpdate && 
           <Controller
           name={"status" as any}
@@ -139,7 +156,9 @@ function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
           }
         </FieldGroup>
 
-        <Button variant={"default"} type='submit' className='mt-4'>
+        <Button
+            disabled={imagesLoading || form.formState.isSubmitting}
+            variant={"default"} type='submit' className='mt-4 w-full'>
           {isUpdate ? (isPending ? LoaderFn("Updating...") : "Update") : (isPending ? LoaderFn("Saving...") : "Save")}
         </Button>
       </form>

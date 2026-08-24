@@ -10,7 +10,7 @@ import {redirect} from "next/navigation";
 
 export const updatingPost = actionClient
   .inputSchema(updatePostSchema)
-  .action(async ({ parsedInput: { title, body, id, status } }) => {
+  .action(async ({ parsedInput: { title, body, id, status,images } }) => {
     const session = await cacheSession()
     if (!session){
       return returnServerError({
@@ -25,6 +25,7 @@ export const updatingPost = actionClient
           title,
           body,
           status,
+            images
         },
       });
       revalidatePath("/");
@@ -34,5 +35,5 @@ export const updatingPost = actionClient
         message:error.message
       })
     }
-    redirect(POSTS)
+
   });
