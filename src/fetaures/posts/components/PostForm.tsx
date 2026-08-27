@@ -21,6 +21,7 @@ import { updatePostSchema } from '../schema/updatePost'
 import { useRouter } from 'next/navigation'
 import FileUploader from "@/fetaures/posts/components/uploadFile";
 import {useState} from "react";
+import TipTap from "@/fetaures/posts/components/TipTap";
 
 interface PostFormProps {
   isUpdate: boolean;
@@ -106,14 +107,16 @@ function PostForm({ isUpdate, actionFn, data }: PostFormProps) {
             name="body"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Textarea
-                  {...field}
-                  id="form-rhf-demo-body"
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="off"
-                  placeholder='Enter content here...'
-                />
+              <Field data-invalid={fieldState.invalid}
+              >
+                {/*<Textarea*/}
+                {/*  {...field}*/}
+                {/*  id="form-rhf-demo-body"*/}
+                {/*  aria-invalid={fieldState.invalid}*/}
+                {/*  autoComplete="off"*/}
+                {/*  placeholder='Enter content here...'*/}
+                {/*/>*/}
+                  <TipTap value={field.value} onChange={field.onChange}/>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}

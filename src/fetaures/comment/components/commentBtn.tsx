@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/avatar"
 import getComment from "@/fetaures/comment/query/getComment";
 import CommentDropDown from "@/fetaures/comment/components/commentDropDown";
-import {CommentWithUser} from "@/fetaures/comment/types/commentsT"; // သို့မဟုတ် Server Action
+import {CommentWithUser} from "@/fetaures/comment/types/commentsT";
+import Reaction from "@/fetaures/posts/components/Reaction"; // သို့မဟုတ် Server Action
 
 interface CommentBtnProps {
     id: string;
@@ -48,7 +49,7 @@ export default function CommentBtn({ id,isLoading,setLoading,setComments,comment
 
     return (
         <div className="flex flex-col gap-2 w-full relative">
-          <div className={""}>
+          <div className={"flex w-full justify-between"}>
               <Button
                   type="button"
                   variant={"outline"}
@@ -65,6 +66,8 @@ export default function CommentBtn({ id,isLoading,setLoading,setComments,comment
                              }
                  </>
               </Button>
+
+              <Reaction postId={id} userId={loginUser!}/>
           </div>
 
 

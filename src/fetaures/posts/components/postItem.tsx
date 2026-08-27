@@ -44,8 +44,9 @@ function PostItem({id,title,body,status,user,loginUser,images}:postItemProps) {
                               >{status}</span>
                           </div>
                         </CardTitle>
-                    <CardDescription className={`text-sm font-mono ${!expend && "line-clamp-2"}`}>
-                        {body}</CardDescription>
+                    <CardDescription className={`text-sm font-mono ${!expend && "line-clamp-2"} [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1`}
+                    dangerouslySetInnerHTML={{__html:body}}>
+                       </CardDescription>
          {
              images.length>0 && <div className={`grid ${caculateColumn(images.length)} border p-2 rounded-md`}>
                  {
