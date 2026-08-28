@@ -24,6 +24,7 @@ model Posts {
   comments  Comment[]
   user      User @relation(fields: [userId],references: [id],onDelete: Cascade)
   reaction  Reaction[]
+  tags       PostTag[]
 }
 
 enum PostStatus {
@@ -126,4 +127,28 @@ model Reaction {
   updatedAt DateTime     @updatedAt
 
   @@unique([userId, postId])
+}
+
+model Tag {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String   @unique
+  usageCount Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  posts      PostTag[]
+
+  @@index([name])
+  @@index([usageCount])
+}
+
+model PostTag{
+  postId  String
+  tagId   String
+  post  Posts @relation(fields: [postId], references: [id],onDelete: Cascade)
+  tag   Tag @relation(fields: [tagId],references: [id],onDelete: Cascade)
+  @@id([tagId,postId])
+  @@index([tagId])
+  @@index([postId])
 }

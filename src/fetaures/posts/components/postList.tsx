@@ -5,10 +5,11 @@ import Pagination from "@/components/Pagination";
 interface Props{
     search:string
     sort:"asc" | "desc",
-    page:string | number
+    page:string | number,
+    tag?:string
 }
-async function PostList({search,sort,page}:Props) {
-    const {posts,totalPage,currentPage} = await getPosts({search,sort,page})
+async function PostList({search,sort,page,tag}:Props) {
+    const {posts,totalPage,currentPage} = await getPosts({search,sort,page,tag})
     const session=await cacheSession()
     const userId = session?.user?.id
 return (

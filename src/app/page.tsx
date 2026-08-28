@@ -34,9 +34,13 @@ export default async function Home({searchParams}: Props) {
         : Array.isArray(params?.page)
             ? params.page[0]
             : params.page;
+    const tag = typeof params?.tag === "string"
+        ? params.tag
+        : Array.isArray(params?.tag)
+            ? params.tag[0]
+            : params.tag;
   const sort = (rawSort === "asc" || rawSort === "desc") ? rawSort : "desc";
 
-  console.log("searchParams", search, sort);
 
   return (
       <div>
@@ -44,7 +48,7 @@ export default async function Home({searchParams}: Props) {
         <Search/>
         <SortBtn sortData={sortData} defaultValue={"desc"}/>
         <Suspense fallback={<PostSkeleton/>}>
-          <PostList search={search} sort={sort} page={page || 1}/>
+          <PostList search={search} sort={sort} page={page || 1} tag={tag}/>
         </Suspense>
       </div>
   );

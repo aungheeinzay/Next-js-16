@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^5.7.1",
     "@prisma/adapter-pg": "^7.9.1",
     "@tiptap/extension-list": "^3.30.3",
+    "@tiptap/extension-mention": "^3.30.3",
     "@tiptap/extensions": "^3.30.3",
     "@tiptap/pm": "^3.30.3",
     "@tiptap/react": "^3.30.3",

@@ -11,6 +11,7 @@ import CreateComment from "@/fetaures/comment/components/createComment";
 import {useState} from "react";
 import CommentBtn from "@/fetaures/comment/components/commentBtn";
 import {CommentWithUser} from "@/fetaures/comment/types/commentsT";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
 
 interface  postItemProps extends  postWithUser{
@@ -18,8 +19,10 @@ interface  postItemProps extends  postWithUser{
     loginUser:string | undefined
 }
 function PostItem({id,title,body,status,user,loginUser,images}:postItemProps) {
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
     const [comments,setComments]=useState<CommentWithUser[]>([])
-
+    const router = useRouter()
     const [loading,setLoading] = useState(false)
     const [expend,setExpend] = useState(false)
     const [selectedImg, setSelectedImg] = useState<string | null>(null); // Click လုပ်ထားသော ပုံကို သိမ်းရန် State
@@ -30,6 +33,33 @@ function PostItem({id,title,body,status,user,loginUser,images}:postItemProps) {
      }else {
          return "grid-cols-2"
      }
+    }
+
+
+    // 3. Body ထဲမှ Hashtag Click ကို ဖမ်းယူသည့် Function
+    const handleBodyClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement
+
+        // Tag Element ဟုတ်မဟုတ် data-type="mention" သို့မဟုတ် class သုံး၍ စစ်ခြင်း
+        const mentionElement = target.closest('[data-type="mention"]') || target.closest('.hash') || target.closest('.mention')
+
+
+        const params = new URLSearchParams(searchParams)
+        if (mentionElement) {
+            e.preventDefault()
+            e.stopPropagation()
+
+            // data-id သို့မဟုတ် `#` ဖယ်ထုတ်ထားသော tag name ကို ယူခြင်း
+            const tagText = mentionElement.getAttribute('data-id') ||
+                mentionElement.textContent?.replace('#', '').trim()
+
+            if (tagText) {
+               params.set("tag",tagText)
+            }else {
+                params.delete("tag")
+            }
+            router.replace(`${pathname}?${params}`)
+        }
     }
   return (
      <Card key={title} className='w-full p-4 flex flex-wrap justify-start'>
@@ -45,7 +75,9 @@ function PostItem({id,title,body,status,user,loginUser,images}:postItemProps) {
                           </div>
                         </CardTitle>
                     <CardDescription className={`text-sm font-mono ${!expend && "line-clamp-2"} [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1`}
-                    dangerouslySetInnerHTML={{__html:body}}>
+                    dangerouslySetInnerHTML={{__html:body}}
+                                     onClick={handleBodyClick}
+                    >
                        </CardDescription>
          {
              images.length>0 && <div className={`grid ${caculateColumn(images.length)} border p-2 rounded-md`}>

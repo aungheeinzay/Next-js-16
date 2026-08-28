@@ -5,6 +5,9 @@ import TipTapButtons from "@/fetaures/posts/components/TipTapButtons";
 import {Placeholder} from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import {EditorContent, useEditor} from "@tiptap/react";
+import Mention from "@tiptap/extension-mention";
+import {tagSuggestion} from "@/fetaures/posts/actions/tipTapSuggestion";
+import {useRouter} from "next/navigation";
 
 interface TipTap {
     value: string
@@ -12,6 +15,7 @@ interface TipTap {
 }
 
 export default function Tiptap({ value, onChange }: TipTap) {
+    const  router = useRouter()
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -22,13 +26,36 @@ export default function Tiptap({ value, onChange }: TipTap) {
             Placeholder.configure({
                 placeholder: "write your ideas"
             }),
+            Mention.configure({
+                HTMLAttributes:{
+                    class: "hash text-blue-500 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-950/50 px-1.5 py-0.5 rounded cursor-pointer hover:underline m-2",
+                },
+                suggestion:{...tagSuggestion}
+            })
 
         ],
         content: value,
         editorProps: {
             attributes: {
-                // Focus ပြုလုပ်ချိန်တွင် Border အပြာရောင်မပေါ်ဘဲ စာရွက်ပေါ်တွင် တိုက်ရိုက်ရိုက်နေသည့် ပုံစံဖြစ်စေရန် focus:outline-none သုံးထားသည်
+
                 class: "prose prose-slate dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1"
+            },
+            handleClick: (view, pos, event) => {
+                const target = event.target as HTMLElement;
+
+                // HTML Class သို့မဟုတ် span Tag အား closest() ဖြင့် ရှာဖွေခြင်း
+                const mentionElement = target.closest('.text-blue-500') || target.closest('span');
+
+                if (mentionElement) {
+
+                    const tagText = mentionElement.textContent?.replace('#', '').trim();
+
+                    if (tagText) {
+                        window.alert("hello world")
+                        return true;
+                    }
+                }
+                return false;
             }
         },
         onUpdate: ({ editor }) => {
