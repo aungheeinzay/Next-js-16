@@ -35,7 +35,7 @@ export const getPosts = async ({ search, sort, page,tag }: getPostPara): Promise
             some: {
                tag:{
                    slug:{
-                       contains:tag.toLocaleLowerCase(),
+                       equals:tag.toLocaleLowerCase(),
                        mode:'insensitive'
                    }
                }

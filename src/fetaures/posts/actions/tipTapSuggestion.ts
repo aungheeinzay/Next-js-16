@@ -2,32 +2,50 @@
 import { ReactRenderer } from '@tiptap/react'
 import { TagList } from '../components/TagList'
 
-
 export const tagSuggestion = {
-    char:"#",
+    char: "#",
     minQueryLength: 1,
-    debounce: 200, // စာရိုက်ရပ်ပြီး 300ms ကြာမှ API ခေါ်မည်
-    initialItems:[
+    debounce: 200,
+    initialItems: [
         { id: '1', name: 'react', slug: 'react', usageCount: 0 },
         { id: '2', name: 'java', slug: 'java', usageCount: 0 },
         { id: '3', name: 'javaScript', slug: 'javascript', usageCount: 0 },
         { id: '4', name: 'nodejs', slug: 'nodejs', usageCount: 0 },
     ],
-    // 1. AbortSignal ပါဝင်သော Async Data Fetching
     items: async ({ query, signal }: { query: string; signal: AbortSignal }) => {
+        if (!query.trim()) return [];
+
         try {
-            const response = await fetch(`/api/tag?query=${encodeURIComponent(query)}`, { signal })
-            if (!response.ok) return []
-            const data = await response.json()
-            return data
+            const response = await fetch(`/api/tag?query=${encodeURIComponent(query)}`, { signal });
+            let data: any[] = [];
+
+            if (response.ok) {
+                data = await response.json();
+            }
+
+
+            const hasExactMatch = data.some(
+                (tag: any) => tag.name.toLowerCase() === query.toLowerCase()
+            );
+
+
+            if (!hasExactMatch) {
+                return [
+                    { id: query, name: query, slug: query, usageCount: 0, isNew: true },
+                    ...data
+                ];
+            }
+
+            return data;
         } catch (error: any) {
-            if (error.name === 'AbortError') return []
-            console.error("Failed to fetch tags:", error)
-            return []
+            if (error.name === 'AbortError') return [];
+            console.error("Failed to fetch tags:", error);
+
+            // API Error တက်ပါကလည်း ရိုက်ထားသော query ကို မပျောက်ဘဲ Tag အဖြစ် ရွေးနိုင်စေရန် ပြန်ပေးမည်
+            return [{ id: query, name: query, slug: query, usageCount: 0, isNew: true }];
         }
     },
 
-    // 2. Modern Render Callback (props.mount အသုံးပြုပုံ)
     render: () => {
         let component: ReactRenderer<any>
         let unmount: (() => void) | null = null
@@ -39,14 +57,12 @@ export const tagSuggestion = {
                     editor: props.editor,
                 })
 
-                // TipTap မှ Managed Positioning အား တာဝန်ယူ စီမံခိုင်းခြင်း
                 if (component.element) {
                     unmount = props.mount(component.element)
                 }
             },
 
             onUpdate(props: any) {
-                // props.loading (true/false) နှင့် props.items များကို Component ထံ Update ပို့ခြင်း
                 component.updateProps(props)
             },
 
@@ -59,7 +75,6 @@ export const tagSuggestion = {
             },
 
             onExit() {
-                // Memory leak မဖြစ်စေရန် unmount နှင့် destroy ကို မဖြစ်မနေ ခေါ်ပေးရမည်
                 unmount?.()
                 component?.destroy()
             },

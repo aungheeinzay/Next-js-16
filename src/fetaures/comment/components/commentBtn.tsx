@@ -95,7 +95,7 @@ export default function CommentBtn({ id,isLoading,setLoading,setComments,comment
                                                 comment:item.comment
                                             }}
                                             commentOwner={loginUser==item.user.id}
-                                            render={()=> <Button variant={"outline"} className={"opacity-0 group-hover:opacity-100 absolute top-1 right-2 group-hover:bg-gray-500 rounded-full" }>
+                                            render={()=> <Button variant={"outline"} className={"opacity-10 group-hover:opacity-100 absolute top-1 right-2 group-hover:bg-gray-500 rounded-full" }>
                                                 <Ellipsis />
                                             </Button>}/>
                                     }

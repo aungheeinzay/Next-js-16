@@ -133,12 +133,13 @@ export default function Reaction({ postId, userId }: ReactionProps) {
                             onClick={()=>handleReaction("LIKE")}
                         >
                             <ThumbsUp
-                                className="
+                                className={`
             h-4 w-4
             transition-all duration-200
             group-hover:-translate-y-0.5
             group-hover:scale-110
-          "
+            ${reaction?.userReaction==="LIKE" && "fill-background"}
+          `}
                             />
                         </Button>
                     </HoverCardTrigger>
@@ -171,12 +172,15 @@ export default function Reaction({ postId, userId }: ReactionProps) {
                             onClick={()=>handleReaction("DISLIKE")}
                         >
                             <ThumbsDown
-                                className="
-            h-4 w-4
+                                className={`
+                                  h-4 w-4
             transition-all duration-200
             group-hover:translate-y-0.5
             group-hover:scale-110
-          "
+             ${reaction?.userReaction==="DISLIKE" && "fill-background"}
+                                `}
+
+
                             />
                         </Button>
                     </HoverCardTrigger>
